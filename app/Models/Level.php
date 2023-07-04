@@ -10,6 +10,8 @@ class Level extends Model
 {
     use HasFactory;
 
+    protected $table = 'levels';
+
     public function classes() : HasMany
     {
         return $this->hasMany(Classe::class);

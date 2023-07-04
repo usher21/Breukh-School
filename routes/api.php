@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\LevelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EleveController;
+use App\Http\Controllers\LevelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/levels', [LevelController::class, 'index']);
+Route::get('/levels/{id}', [LevelController::class, 'show']);
+
+Route::apiResource('/eleves', EleveController::class);
+Route::get('/classe/eleves/{id}', [EleveController::class, 'byClasse']);

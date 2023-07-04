@@ -12,6 +12,6 @@ class Classe extends Model
 
     public function level() : BelongsTo
     {
-        return $this->belongsTo(Classe::class);
+        return $this->belongsTo(Level::class);
     }
 }
