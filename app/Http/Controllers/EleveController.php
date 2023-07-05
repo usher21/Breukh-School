@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ElevePostRequest;
-use App\Http\Resources\EleveRessource;
 use App\Http\Resources\InscriptionRessource;
 use App\Models\Eleve;
 use App\Models\Inscription;
@@ -32,7 +31,9 @@ class EleveController extends Controller
         $validatedData =  $request->validated();
 
         if (!$this->checkDate(new DateTime($validatedData['birthdate']))) {
-            dd("L'éleve doit avoir au minimum 5 ans");
+            return response()->json([
+                'message' => "L'éleve doit avoir au minimum 5 ans"
+            ]);
         }
 
         DB::beginTransaction();
@@ -96,7 +97,7 @@ class EleveController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $v = $request->validate([
+        $request->validate([
             "firstname" => self::REQUIRE_RULES,
             "lastname" => self::REQUIRE_RULES,
             "birthdate" => self::REQUIRE_RULES . "|date_format:Y-m-d",
@@ -125,10 +126,5 @@ class EleveController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function byClasse(string $id)
-    {
-        return InscriptionRessource::collection(Inscription::where('classe_id', $id)->get());
     }
 }

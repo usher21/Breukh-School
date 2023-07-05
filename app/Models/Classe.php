@@ -10,6 +10,12 @@ class Classe extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
+
+    protected $guarded = ['id'];
+
     public function level() : BelongsTo
     {
         return $this->belongsTo(Level::class);

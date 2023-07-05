@@ -12,6 +12,10 @@ class Level extends Model
 
     protected $table = 'levels';
 
+    protected $hidden = [
+        'created_at', 'updated_at'
+    ];
+
     public function classes() : HasMany
     {
         return $this->hasMany(Classe::class);

@@ -16,7 +16,8 @@ class ClasseResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "label" => $this->label
+            "label" => $this->label,
+            "level" => $this->whenLoaded('level')
         ];
     }
 }

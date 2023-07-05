@@ -13,23 +13,24 @@ class LevelController extends Controller
 
     public function index(Request $request)
     {
-        if (!$request->input('join')) {
-            return Level::all('id', 'label');
+        if (method_exists(Level::class, $request->join)) {
+            return LevelResource::collection(Level::with($request->join)->get());
         }
 
-        if (method_exists(Level::class, $request->input('join'))) {
-            return LevelResource::collection(Level::with($request->input('join'))->get());
-        } else {
-            return [
-                'message' => "Route introuvable !"
-            ];
-        }
+        return LevelResource::collection(Level::all());
+    }
+
+    public function store(Request $request)
+    {
+        
     }
 
     public function show(Request $request, Level $level)
     {
-        $this->fun();
-        dd($request->all());
+        if (method_exists(Level::class, $request->join)) {
+            return new LevelResource($level->with($request->join)->first());
+        }
+
         return $level;
     }
 }
