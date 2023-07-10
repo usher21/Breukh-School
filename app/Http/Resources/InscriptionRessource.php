@@ -15,10 +15,9 @@ class InscriptionRessource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "eleve" => new EleveRessource($this->eleve),
-            "classe" => new ClasseResource($this->classe),
-            "annee_scolaire" => $this->anneeScolaire,
+            "student_infos" => new EleveRessource($this->eleve),
+            "classe" => $this->classe->label,
+            "annee_scolaire" => $this->anneeScolaire->label,
         ];
     }
 }

@@ -10,6 +10,8 @@ class DisciplineClasse extends Model
 {
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     public function classe() : BelongsTo
     {
         return $this->belongsTo(Classe::class);
@@ -23,5 +25,10 @@ class DisciplineClasse extends Model
     public function evaluation() : BelongsTo
     {
         return $this->belongsTo(Evaluation::class);
+    }
+
+    public function semester() : BelongsTo
+    {
+        return $this->belongsTo(Semester::class);
     }
 }

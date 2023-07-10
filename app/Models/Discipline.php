@@ -9,5 +9,5 @@ class Discipline extends Model
 {
     use HasFactory;
 
-    
+    protected $guarded = ['id'];
 }

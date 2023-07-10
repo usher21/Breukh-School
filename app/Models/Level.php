@@ -12,9 +12,7 @@ class Level extends Model
 
     protected $table = 'levels';
 
-    protected $hidden = [
-        'created_at', 'updated_at'
-    ];
+    protected $fillable = ['label'];
 
     public function classes() : HasMany
     {

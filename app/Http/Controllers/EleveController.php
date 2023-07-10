@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ElevePostRequest;
-use App\Http\Resources\InscriptionRessource;
+use DateTime;
+use DateInterval;
 use App\Models\Eleve;
 use App\Models\Inscription;
-use DateInterval;
-use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\ElevePostRequest;
+use App\Http\Resources\InscriptionRessource;
 
 class EleveController extends Controller
 {
@@ -31,9 +31,7 @@ class EleveController extends Controller
         $validatedData =  $request->validated();
 
         if (!$this->checkDate(new DateTime($validatedData['birthdate']))) {
-            return response()->json([
-                'message' => "L'éleve doit avoir au minimum 5 ans"
-            ]);
+            return ['message' => "L'éleve doit avoir au minimum 5 ans"];
         }
 
         DB::beginTransaction();
@@ -45,8 +43,6 @@ class EleveController extends Controller
                 "birthplace" => $validatedData['birthplace'],
                 "profil" => $validatedData['profil'],
                 "sex" => $validatedData['sex'],
-                "number" => $request->profil === 1 ? Eleve::generateNumber() : null,
-                "allocated_number" => $request->profil === 1 ? 0 : null
             ]);
 
             Inscription::create([
@@ -82,7 +78,7 @@ class EleveController extends Controller
     public function show(string $id)
     {
         $student = Inscription::where('eleve_id', $id)->first();
-        
+
         if ($student) {
             return new InscriptionRessource($student);
         }
@@ -98,25 +94,24 @@ class EleveController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            "firstname" => self::REQUIRE_RULES,
+            "firstname" => static::REQUIRE_RULES,
             "lastname" => self::REQUIRE_RULES,
             "birthdate" => self::REQUIRE_RULES . "|date_format:Y-m-d",
             "birthplace" => self::REQUIRE_RULES,
             "profil" => self::REQUIRE_RULES,
             "sex" => self::REQUIRE_RULES,
             "state" => self::REQUIRE_RULES,
-            "number" => self::REQUIRE_RULES
+            "number" => self::REQUIRE_RULES,
+            "email" => self::REQUIRE_RULES . '|email'
         ]);
 
-        $student = Eleve::where('id', $id);
+        $student = Eleve::where('id', $id)->first();
 
         if (!$student) {
-            return [
-                "message" => "Elève introuvable !"
-            ];
+            return ["message" => "Elève introuvable !"];
         }
 
-        $student->update($request->only('firstname', 'lastname', 'birthdate', 'birthplace', 'profil', 'sex', 'state', 'number', 'allocated_number'));
+        $student->update($request->only('firstname', 'lastname', 'birthdate', 'birthplace', 'profil', 'sex', 'state', 'number', 'email'));
         return new InscriptionRessource(Inscription::where('eleve_id', $id)->first());
     }
 
@@ -126,5 +121,10 @@ class EleveController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getOut(Request $request)
+    {
+        return Eleve::whereIn('id', $request->all())->update(['state' => 0]);
     }
 }

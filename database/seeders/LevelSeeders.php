@@ -13,14 +13,11 @@ class LevelSeeders extends Seeder
      */
     public function run(): void
     {
-        $levels = [
-            [
+        $levels = [[
                 'label' => "Elémentaire",
-            ],
-            [
+            ],[
                 'label' => 'Moyen'
-            ],
-            [
+            ],[
                 'label' => 'Secondaire'
             ]
         ];

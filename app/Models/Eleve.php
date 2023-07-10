@@ -5,36 +5,40 @@ namespace App\Models;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Eleve extends Model
 {
     use HasFactory;
 
-    public static function generateNumber()
+    public function __construct()
     {
-        $number = 0;
-        $allocatedNumbers = DB::table('eleves')->where('state', 0)->where('allocated_number', 0)->get();
-
-        if ($allocatedNumbers->isEmpty()) {
-            $last = DB::table('eleves')->orderByDesc('number')->first();
-            $number = $last->number + 1;
-        } else {
-            $minNumber = $allocatedNumbers->sortByDesc('number')->last();
-            $number = $minNumber->number;
-            DB::table("eleves")->where('id', $minNumber->id)->update(['allocated_number' => 1]);
-        }
-
-        return $number;
+        static::creating(function ($student) {
+            if ($student->profil === 1) {
+                $student->number = $this->generateNumber();
+            } else {
+                $student->number = null;
+            }
+        });
     }
 
-    protected $fillable = [
-        "firstname",
-        "lastname",
-        "birthdate",
-        "birthplace",
-        "profil",
-        "sex",
-        "number",
-        "allocated_number"
-    ];
+    public static function generateNumber()
+    {
+        $allocatedNumbers = DB::table('eleves')->where('profil', 1)->where('state', 1)->get()->sortBy('number');
+
+        for ($i = 0; $i < count($allocatedNumbers); $i++) {
+            if ($allocatedNumbers[$i]->number != ($i + 1)) {
+                return $allocatedNumbers[$i]->number - 1;
+            }
+        }
+
+        return count($allocatedNumbers) + 1;
+    }
+
+    public function classes() : BelongsToMany
+    {
+        return $this->belongsToMany(Classe::class, 'inscriptions', 'eleve_id', 'classe_id');
+    }
+
+    protected $guarded = ['id'];
 }

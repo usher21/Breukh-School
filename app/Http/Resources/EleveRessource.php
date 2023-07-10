@@ -24,7 +24,7 @@ class EleveRessource extends JsonResource
             "profil" => $this->profil,
             "state" => $this->state,
             "number" => $this->number,
-            "allocated_number" => $this->allocated_number
+            "email" => $this->email,
         ];
     }
 }
