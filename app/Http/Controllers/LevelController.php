@@ -43,7 +43,10 @@ class LevelController extends Controller
     public function show(Request $request, Level $level)
     {
         if ($request->join) {
-            return new LevelResource($this->resolve($level, $request->join, 'first'));
+            $levelObj = $this->resolve($level, $request->join);
+            if ($levelObj) {
+                return new LevelResource($levelObj->first());
+            }
         }
 
         return new LevelResource($level);

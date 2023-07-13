@@ -10,7 +10,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        return User::all(['id', 'fullname', 'email']);
+        return User::all(['id', 'fullname', 'email', 'password']);
     }
 
     public function store(Request $request)
@@ -27,5 +27,17 @@ class UserController extends Controller
         ])->validate();
 
         return User::create($validatedData);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            "fullname" => "sometimes:required",
+            "email" => "sometimes:required",
+            "password" => "sometimes:required"
+        ]);
+
+        $user->update($request->only('fullname', 'email', 'password'));
+        return $user;
     }
 }
