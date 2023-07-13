@@ -17,7 +17,9 @@ class ClasseResource extends JsonResource
         return [
             "id" => $this->id,
             "label" => $this->label,
-            "level" => new LevelResource($this->whenLoaded('level'))
+            "level" => new LevelResource($this->whenLoaded('level')),
+            "eleves" => EleveRessource::collection($this->whenLoaded('students')),
+            "disciplines" => DisciplineRessource::collection($this->whenLoaded('subjects')),
         ];
     }
 }

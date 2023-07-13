@@ -4,18 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DisciplineRessource;
 use App\Models\Discipline;
+use App\Traits\JoinQueryParams;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class DisciplineController extends Controller
 {
+    use JoinQueryParams;
+
     const SUBJECT_NOT_FOUND = "Aucune discipline ne correspond à cette identifiant";
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->join) {
+            $subjects = $this->resolve(Discipline::class, $request->join);
+            if ($subjects) {
+                return DisciplineRessource::collection($subjects->get());
+            }
+        }
+
         return DisciplineRessource::collection(Discipline::all());
     }
 

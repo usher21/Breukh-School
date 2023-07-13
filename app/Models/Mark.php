@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Mark extends Model
 {
@@ -22,25 +24,42 @@ class Mark extends Model
         return $this->belongsTo(DisciplineClasse::class);
     }
 
-    public function scopeByClasse(Builder $query, $classeId)
+    public function classes() : BelongsToMany
+    {
+        return $this->belongsToMany(Classe::class, 'inscriptions', 'classe_id', 'inscription_id');
+    }
+
+    public function scopeByClasse(Builder $query, $classeId) : Builder
     {
         return $query->whereHas('disciplineClasse', function ($innerQuery) use ($classeId) {
             $innerQuery->where('classe_id', $classeId);
         });
     }
 
-    public function scopeBySubject(Builder $query, $subjectId)
+    public function scopeBySubject(Builder $query, $subjectId) : Builder
     {
         return $query->whereHas('disciplineClasse', function ($innerQuery) use ($subjectId) {
             $innerQuery->where('discipline_id', $subjectId);
         });
     }
     
-    public function scopeByStudent(Builder $query, $studentId)
+    public function scopeByStudent(Builder $query, $studentId) : Builder
     {
         return $query->whereHas('inscription', function ($innerQuery) use ($studentId) {
             $innerQuery->where('eleve_id', $studentId);
         });
+    }
+
+    public function scopeBySemester(Builder $query, $semesterId) : Builder
+    {
+        return $query->whereHas('disciplineClasse', function ($innerQuery) use ($semesterId) {
+            $innerQuery->where('semester_id', $semesterId);
+        });
+    }
+
+    public function scopeLoadClasse(Builder $query, $classeId) : Builder
+    {
+        return $query->where('classe_id', $classeId);
     }
 
     public function scopeWithResources(Builder $query)
@@ -51,24 +70,24 @@ class Mark extends Model
     public function scopeWithRelatedData(Builder $query)
     {
         return $query->join('discipline_classes', 'discipline_classes.id', '=', 'marks.discipline_classe_id')
-            ->join('classes', 'classes.id', '=', 'discipline_classes.classe_id')
-            ->join('disciplines', 'disciplines.id', '=', 'discipline_classes.discipline_id')
-            ->join('evaluations', 'evaluations.id', '=', 'discipline_classes.evaluation_id')
-            ->join('inscriptions', 'inscriptions.id', '=', 'marks.inscription_id')
-            ->join('eleves', 'eleves.id', '=', 'inscriptions.eleve_id')
-            ->select(
-                'marks.id as mark_id',
-                'marks.value as mark_value',
-                'classes.id as classe_id',
-                'classes.label as classe_name',
-                'eleves.firstname as firstname',
-                'eleves.lastname as lastname',
-                'eleves.state as student_state',
-                'eleves.number as student_number',
-                'disciplines.id as discipline_id',
-                'disciplines.label as discipline_name',
-                'evaluations.id as evaluation_id',
-                'evaluations.label as evaluation_name'
-            );
+                    ->join('classes', 'classes.id', '=', 'discipline_classes.classe_id')
+                    ->join('disciplines', 'disciplines.id', '=', 'discipline_classes.discipline_id')
+                    ->join('evaluations', 'evaluations.id', '=', 'discipline_classes.evaluation_id')
+                    ->join('inscriptions', 'inscriptions.id', '=', 'marks.inscription_id')
+                    ->join('eleves', 'eleves.id', '=', 'inscriptions.eleve_id')
+                    ->select(
+                        'marks.id as mark_id',
+                        'marks.value as mark_value',
+                        'classes.id as classe_id',
+                        'classes.label as classe_name',
+                        'eleves.firstname as firstname',
+                        'eleves.lastname as lastname',
+                        'eleves.state as student_state',
+                        'eleves.number as student_number',
+                        'disciplines.id as discipline_id',
+                        'disciplines.label as discipline_name',
+                        'evaluations.id as evaluation_id',
+                        'evaluations.label as evaluation_name'
+                    );
     }
 }

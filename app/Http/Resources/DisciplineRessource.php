@@ -16,7 +16,8 @@ class DisciplineRessource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "label" => $this->label
+            "label" => $this->label,
+            "classes" => ClasseResource::collection($this->whenLoaded('classes'))
         ];
     }
 }

@@ -5,14 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Level;
 use Illuminate\Http\Request;
 use App\Http\Resources\LevelResource;
+use App\Traits\JoinQueryParams;
 use Illuminate\Support\Facades\Validator;
 
 class LevelController extends Controller
 {
+    use JoinQueryParams;
+
     public function index(Request $request)
     {
-        if ($request->join && method_exists(Level::class, $request->join)) {
-            return LevelResource::collection(Level::with($request->join)->get());
+        if ($request->join) {
+            $levels = $this->resolve(Level::class, $request->join);
+            if ($levels) {
+                return LevelResource::collection($levels->get());
+            }
         }
 
         return LevelResource::collection(Level::all());
@@ -36,8 +42,8 @@ class LevelController extends Controller
 
     public function show(Request $request, Level $level)
     {
-        if ($request->join && method_exists(Level::class, $request->join)) {
-            return new LevelResource($level->load($request->join));
+        if ($request->join) {
+            return new LevelResource($this->resolve($level, $request->join, 'first'));
         }
 
         return new LevelResource($level);

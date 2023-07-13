@@ -10,13 +10,16 @@ use App\Http\Resources\ClasseResource;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\InscriptionRessource;
 use App\Http\Resources\DisciplineClasseRessource;
+use App\Traits\JoinQueryParams;
 
 class ClasseController extends Controller
 {
+    use JoinQueryParams;
+
     public function index(Request $request)
     {
-        if (method_exists(Classe::class, $request->join)) {
-            return ClasseResource::collection(Classe::with($request->join)->get());
+        if ($request->join) {
+            return ClasseResource::collection($this->resolve(Classe::class, $request->join)->get());
         }
 
         return ClasseResource::collection(Classe::all());
@@ -38,11 +41,11 @@ class ClasseController extends Controller
 
     public function show(Request $request, string $id)
     {
-        if (method_exists(Classe::class, $request->join)) {
-            return new ClasseResource(Classe::with($request->join)->where('id', $id)->first());
+        if ($request->join) {
+            return new ClasseResource($this->resolve(Classe::class, $request->join)->first());
         }
 
-        return new ClasseResource(Classe::where('id', $id)->first());
+        return new ClasseResource(Classe::find($id)->first());
     }
 
     public function update(Request $request, Classe $classe)

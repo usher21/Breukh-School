@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Classe extends Model
 {
@@ -26,5 +28,10 @@ class Classe extends Model
     public function events() : BelongsToMany
     {
         return $this->belongsToMany(Event::class, 'event_classe', 'classe_id', 'event_id');
+    }
+
+    public function subjects() : BelongsToMany
+    {
+        return $this->belongsToMany(Discipline::class, 'discipline_classes');
     }
 }

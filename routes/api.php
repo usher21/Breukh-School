@@ -41,12 +41,9 @@ Route::prefix('/classes')->controller(ClasseController::class)->group(function (
 
 Route::apiResource('/eleves', EleveController::class)->parameters(['eleves' => 'eleve']);
 Route::apiResource('/classes', ClasseController::class)->parameters(['classes' => 'classe']);
-
-Route::apiResources([
-    '/levels' => LevelController::class,
-    '/disciplines' => DisciplineController::class,
-    '/evaluations' => EvaluationController::class
-]);
+Route::apiResource('/levels', LevelController::class);
+Route::apiResource('/disciplines', DisciplineController::class);
+Route::apiResource('/evaluations', EvaluationController::class);
 
 Route::prefix('/classes')->controller(MarkController::class)->group(function () {
     Route::get("/{classe_id}/disciplines/{discipline_id}/notes", "getStudentNotesBySubjectId");
